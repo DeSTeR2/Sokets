@@ -126,8 +126,8 @@ void ServerC::Start()
 void ServerC::ProcessNewMessage(int nClientSocket)
 {
 	//logg.Log("Processing message from client: " + nClientSocket);
-	char buff[256 + 1] = { 0 };
-	int nRet = recv(nClientSocket, buff, 256, 0);
+	char buff[10001] = { 0 };
+	int nRet = recv(nClientSocket, buff, 10001, 0);
 	if (nRet <= 0) {
 		logg.Log("There is an error! Closing the connection with " + to_string(nClientSocket));
 		closesocket(nClientSocket);
@@ -155,10 +155,11 @@ void ServerC::ProcessNewMessage(int nClientSocket)
 				//cout << "----------------------------------------------------------------------\n";
 				//logg.Log("Message from client: |" + message + "|");
 				//cout << "----------------------------------------------------------------------\n";
+					
 				auto stop = std::chrono::high_resolution_clock::now();
 				using namespace std::chrono;
 				duration<double> time_span = duration_cast<duration<double>>(stop - clientsTimes[nClientSocket]);
-				//cout << time_span.count() * 1000 << endl;
+				cout << "Time passed:   " << time_span.count() * 1000 << " miliseconds" << endl;
 				int deltaTime = time_span.count() * 1000;
 				int messageSize = 13;
 
@@ -168,7 +169,7 @@ void ServerC::ProcessNewMessage(int nClientSocket)
 
 				return;
 		}
-		else if (message == "req") { send(nClientSocket, "R", 1, 0); return; }
+		else if (message[0] == '\x01') { send(nClientSocket, "L", 1, 0); return; }
 
 		if (commands[message] == "") send(nClientSocket, commands["?"].c_str(), commands["?"].size(), 0);
 		else send(nClientSocket, commands[message].c_str(), commands[message].size(), 0);
