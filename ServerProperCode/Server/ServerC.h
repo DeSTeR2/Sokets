@@ -11,6 +11,7 @@
 #include <conio.h>
 #include <ratio>
 
+#include "Logger.h"
 using namespace std;
 
 
@@ -29,7 +30,9 @@ private:
 	fd_set fr, fw, fe;
 	struct timeval tv;
 
-	map<string, string> commands = { {"help", "Possible commands: \n start - starts sending messages \n who - tells who am i and variant"}, {"start", "Start sending requests!"}, {"who","Vlasenko Zahar.\n Variant: 22.\nDescription: Message size/speed test."}, {{"?"}, {"Wrong command.\nType - help, to see possible command "}} };
+	map<string, string> commands = { {"help", "Possible commands: \n start - starts sending messages \n who - tells who am i and variant \n stop - close connection with server"}, {"start", "Start sending requests!"}, {"who","Vlasenko Zahar.\n Variant: 22.\nDescription: Message size/speed test."}, {{"?"}, {"Wrong command.\nType - help, to see possible command "}}, {{"stop"},{"Close connection with server"}}};
+
+	Logger::Logger logg;
 
 	void ProcessNewMessage(int nClientSocket);
 	void ProcessNewRequest();

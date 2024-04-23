@@ -10,10 +10,39 @@ using namespace std;
 int nClientSocket;
 struct sockaddr_in srv;
 Logger::Logger logg;
+int _size = 0;
 
+int sizes[] = {10,50,100,1000,10000};
+
+void SendRequests() {
+	while (1) {
+
+		char buff[255] = { 0 };
+		logg.Log("Sending " + to_string(sizes[_size]) + " requests");
+		for (int i = 0; i < sizes[_size]; i++) {
+			send(nClientSocket, "req", 3, 0);
+
+			recv(nClientSocket, buff, 255, 0);
+		}
+		send(nClientSocket, "end", 3, 0);
+		recv(nClientSocket, buff, 255, 0);
+		string time_ = buff;
+		time_ = "Passed: " + time_ + " miliseconds";
+		logg.Log(time_);
+		_size = (_size + 1) % 5;
+		if (_size == 0) break;
+	}
+}	
+
+void ProccesMessage(string message) {
+	if (message == "R") {
+		SendRequests();
+	}
+}
 
 int main() {
-	logg.Init("Log\\Client.txt");
+	srand(time(0));
+	logg.Init("Log\\Client" + to_string(rand()%100) + ".txt");
 
 	WSADATA ws;
 	int nRet = 0;
@@ -61,7 +90,19 @@ int main() {
 	std::string str = buff;
 	logg.Log("Message: " + str);
 	while (1) {
-	}
+		memset(buff, 0, sizeof buff);
+		std::string input;
+		logg.Log("Waiting for command: ");
+		cin >> input;
 
+		logg.Log("Command: " + input);
+		if (input == "stop") break;
+
+		send(nClientSocket, input.c_str(), input.size(), 0);
+		recv(nClientSocket, buff, 255, 0);
+		logg.Log(buff);
+		ProccesMessage(buff);
+	}
+	logg.~Logger();
 	return 0;
 }

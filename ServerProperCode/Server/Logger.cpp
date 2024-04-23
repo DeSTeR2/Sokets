@@ -11,7 +11,6 @@ namespace Logger {
 	{
 		this->filePath = filePath;
 		file.open(filePath);
-		Log("Log file path: " + filePath);
 		return true;
 	}
 
@@ -21,7 +20,7 @@ namespace Logger {
 		char* dt = ctime(&now);
 		dt[24] = ']';
 
-		file << "Time: [" << dt << "\n" << message << "\n\n";
+		file << "Time: [" << dt << "\nMessage: " << message << "\n\n";
 		std::cout << message << "\n";
 		return true;
 	}
