@@ -2,36 +2,41 @@
 
 #include <iostream>
 #include <winsock.h>
+#include "Logger.h"
 using namespace std;
 
 #define PORT 9909
 
 int nClientSocket;
 struct sockaddr_in srv;
+Logger::Logger logg;
+
 
 int main() {
+	logg.Init("Log\\Client.txt");
+
 	WSADATA ws;
 	int nRet = 0;
 	int nMaxFd;
 
 
 	if (WSAStartup(MAKEWORD(2, 2), &ws) < 0) {
-		cout << "The wsastartup failed init\n";
+		logg.Log("The wsastartup failed init");
 		WSACleanup();
 		exit(EXIT_FAILURE);
 	}
 	else {
-		cout << "The wsastartup successfully init\n";
+		logg.Log("The wsastartup successfully init");
 	}
 
 	nClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (nClientSocket < 0) {
-		cout << "The socket didn`t opend\n";
+		logg.Log("The socket didn`t opend");
 		WSACleanup();
 		exit(EXIT_FAILURE);
 	}
 	else {
-		cout << "The socket opend successfully\n";
+		logg.Log("The socket opened successfully");
 	}
 
 	srv.sin_family = AF_INET;
@@ -42,19 +47,19 @@ int main() {
 
 	nRet = connect(nClientSocket, (struct sockaddr*)&srv, sizeof(srv));
 	if (nRet < 0) {
-		cout << "Connection failed\n";
+		logg.Log("Connection failed");
 		WSACleanup();
 		exit(EXIT_FAILURE);
 	}
 	else {
-		cout << "Connected!\n";
+		logg.Log("Connected!");
 	}
 
 	char buff[255] = { 0 };
 	recv(nClientSocket, buff, 255, 0);
 
-	cout << "Message: " << buff;
-	cout << '\n';
+	std::string str = buff;
+	logg.Log("Message: " + str);
 	while (1) {
 	}
 
